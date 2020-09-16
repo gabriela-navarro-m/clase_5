@@ -1,14 +1,5 @@
 <!-- Estilo del HTML -->
-<style type="text/css">
-  h1 {font-size: 32px;color: #00008B}
-  h1.title {font-size: 32px;}
-  h2 {font-size: 30px;color: #4169E1}
-  h3 {font-size: 26px;}
-  h4 {font-size: 24px;}
-   p {font-size: 22px; color: black}
-  li { font-size: 18px;color: black}
-  .table th:not([align]) {text-align: left;} 
-</style>
+<style type="text/css"> h1 {font-size: 32px;color: #00008B} h1.title {font-size: 32px;} h2 {font-size: 30px;color: #4169E1} h3 {font-size: 26px;}  h4 {font-size: 24px;} p {font-size: 22px; color: black}  li { font-size: 18px;color: black} .table th:not([align]) {text-align: left;} </style>
 
 ![GitHub](https://img.shields.io/github/license/taller-R/clase_5) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/taller-R/clase_5/issues) ![](https://img.shields.io/github/followers/taller-R?style=social)
 
