@@ -40,7 +40,7 @@ Despues de descargar o clonar el repositorio de la clase, usted debe abrir el ar
 
 Ahora puedes ir a la carpeta **codes** y abrir el script **Clase 5.R** para replicar la clase.
 
-![](help/graphs/aas.gif)
+![](help/graphs/great.gif)
 
 ## 4. Notas
 * Los vídeos de la clase se encuentran [aquí](https://www.dropbox.com/sh/pvli5tnvwxc6bep/AADiqBgOhHqq17K44o81hac2a?dl=0). Nota: Dropbox no deja reproducir los vídeos más de 1 hora en linea, debe descargarlos para que pueda verlos completos.
