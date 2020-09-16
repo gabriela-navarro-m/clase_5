@@ -1,6 +1,3 @@
-<!-- Estilo del HTML -->
-<style type="text/css"> h1 {font-size: 32px;color: #00008B} h1.title {font-size: 32px;} h2 {font-size: 30px;color: #4169E1} h3 {font-size: 26px;}  h4 {font-size: 24px;} p {font-size: 22px; color: black}  li { font-size: 18px;color: black} .table th:not([align]) {text-align: left;} </style>
-
 ![GitHub](https://img.shields.io/github/license/taller-R/clase_5) [![contributions welcome](https://img.shields.io/badge/contributions-welcome-brightgreen.svg?style=flat)](https://github.com/taller-R/clase_5/issues) ![](https://img.shields.io/github/followers/taller-R?style=social)
 
 <img src="https://avatars0.githubusercontent.com/u/69440432?s=400&u=96b3e58c713578b563d5c3d3c259f34965ac8e33&v=4" align="right" width=120 height=120 alt="" />
