@@ -4,9 +4,9 @@ output: html_document
 ---
 <!-- Estilo del HTML -->
 <style type="text/css">
-h1 {font-size: 32px;color: red}
+h1 {font-size: 32px;color: #00008B}
 h1.title {font-size: 32px;}
-h2 {font-size: 30px;}
+h2 {font-size: 30px;color: #4169E1}
 h3 {font-size: 26px;}
 h4 {font-size: 24px;}
  p {font-size: 22px; color: black}
@@ -90,7 +90,7 @@ library('tidyverse') ; library('reshape2') ; library('data.table')
 
 Ahora sí, vamos al script de la clase ...
 
-![](help/graphs/run.gif)
+![](help/graphs/great.gif)
 
 
 
