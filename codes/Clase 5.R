@@ -52,7 +52,7 @@ View(ocupa_wide)
 parlamento = readxl::read_excel(path = 'data/original/mujeres_parlamento.xlsx')
 summary(parlamento)
 
-parlamento_long = reshape2::melt(data = parlamento, id.vars = c('country') , value.name="mujeres")
+parlamento_long = reshape2::melt(data = parlamento, id.vars = c('country') , value.name="mujeres" )
 View(parlamento_long)
 
 #### 1.4.1 Veamos la diferencia entre hombres y mujeres
@@ -62,12 +62,14 @@ parlamento_long = mutate(parlamento_long, hombres = 100 - mujeres)
 summary(parlamento_long$hombres) # La mediana!!!
 
 "Mediana de los ultimos 10 yeasr en los paises de america latina"
-parlamento_long %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres))
+parlamento_long %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres)) 
+results = parlamento_long %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres) , total = count() , sum())
+results = results[order(results$m_hombres,decreasing = T),]
 
 "Promedio por year"
 parlamento_long %>% group_by(variable) %>% summarize(m_hombres = mean(hombres) , m_mujeres = mean(mujeres))
 
-#### 1.5.1 Hagamos el mismo ejercicio pero para tasa de desocupacion
+#### 1.5.1 Hagamos el mismo ejercicio pero para tasa de ocupacion
 
 "Promedio de los ultimos 10 yeasr en los paises de america latina"
 ocupa_wide %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres))
@@ -102,12 +104,12 @@ is.POSIXct(siedco$fecha_1)
 is.Date(siedco$fecha_2)
 
 #### 2.3 Convertir de character a fecha
-siedco  = siedco %>% mutate(fecha_3 = as.POSIXct(fecha, format = "%Y-%m-%d", tz = "UTC"), # De Character a POSIXct
+siedco  = siedco %>% mutate(fecha_3 = as.POSIXct(fecha, format = "%Y-%m-%d"), # De Character a POSIXct
                             fecha_4 = as.Date(fecha, "%Y-%m-%d")) # De Character a Date
 str(siedco)
 
 #### 2.4 Convertir de fecha a character
-siedco  = siedco %>% mutate(fecha_5 = as.character(fecha_1, format = "%Y-%m-%d"), # De POSIXct a Character
+siedco  = siedco %>% mutate(fecha_5 = as.character(fecha_1, format = "%d-%m-%Y"), # De POSIXct a Character
                             fecha_6 = as.character(fecha_2, format = "%Y-%m-%d")) # De Date a Character
 is.character(siedco$fecha_5)
 is.character(siedco$fecha_6)
@@ -119,6 +121,13 @@ siedco  = siedco %>% mutate(year_month = format(as.Date(fecha_1), "%Y-%m"), # Ex
 
 #### 2.6 Operaciones entre fechas
 as.Date(x = "2020-09-09","%Y-%m-%d") %>% as.numeric()
+as.Date(x = "2020-09-10","%Y-%m-%d") %>% as.numeric()
 siedco  = siedco %>% mutate(diferencia = 18514 - as.numeric(fecha_2))
+
+
+
+
+
+
 
 
