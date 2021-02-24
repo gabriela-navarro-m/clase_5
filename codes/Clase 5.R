@@ -18,10 +18,10 @@ browseURL(url = "https://www.tidyverse.org", browser = getOption("browser"))
 browseURL(url = "http://microdatos.dane.gov.co/index.php/catalog/659/get_microdata", browser = getOption("browser")) # Fuente: DANE
 
 cg_cabecera = readRDS(file = "data/input/Cabecera - Caracteristicas generales (Personas).rds")
-ocu_cabecera = readRDS(file = "data/input/Cabecera - Desocupados.csv")
+ocu_cabecera = readRDS(file = "data/input/Cabecera - Ocupados.rds")
 
 cg_resto = readRDS(file = "data/input/Resto - Caracteristicas generales (Personas).rds")
-ocu_resto = readRDS(file = "data/input/Resto - Desocupados.rds")
+ocu_resto = readRDS(file = "data/input/Resto - Ocupados.rds")
 
 #### 1.2 Hacer merge de las bases de datos
 browseURL(url = "http://microdatos.dane.gov.co/index.php/catalog/659/data_dictionary", browser = getOption("browser")) # Chequear el diccionario de variables
@@ -33,7 +33,7 @@ duplicated(paste0(cg_cabecera$directorio,cg_cabecera$secuencia_p)) %>% table()
 
 duplicated(paste0(cg_cabecera$directorio,cg_cabecera$secuencia_p,cg_cabecera$orden)) %>% table() # No hay duplicados en X
 
-duplicated(paste0(deso_cabecera$directorio,deso_cabecera$secuencia_p,deso_cabecera$orden)) %>% table() # No hay duplicados en Y
+duplicated(paste0(deso_cabecera$directorio,ocu_cabecera$secuencia_p,ocu_cabecera$orden)) %>% table() # No hay duplicados en Y
 
 #### 1.2.2 Merge dejando todas las observaciones de caracteristicas generales
 cabecera = full_join(x = cg_cabecera , y = deso_cabecera , by = c('directorio','secuencia_p','orden') , suffixes = c('_cg','_deso'))  
