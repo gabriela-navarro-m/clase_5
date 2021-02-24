@@ -89,36 +89,9 @@ parlamento_long = mutate(parlamento_long, hombres = 100 - mujeres)
 #-----------------#
 # 3.Agrupar datos # 
 #-----------------#
-
-#### 3 Limpiemos entorno una vez mas
-rm(list = ls())
-data = readRDS("data/input/geih nacional.rds")
-
-#### 3.1 Calculos por grupos
-'primero aseguremonos que el factor de expancion sea numerico'
-is.numeric(data$cantidad)
-
-'numero de homicidios por genero'
-data %>% group_by(genero) %>% summarise(total = sum(cantidad))
-
-'numero de homicidios por genero y medio'
-genero_arma = data %>% group_by(genero,`armas medios`) %>% summarise(total = sum(cantidad))
-
-'numero de homicidios y la edad por sexo'
-data %>% group_by(P6020) %>% summarise(education = weighted.mean(ESC, fex_c_2011) ,  age = weighted.mean(P6040, fex_c_2011))
-
-'limpiemos la variable primero'
-is.numeric(data$ESC)
-data %>% subset(is.na(ESC)==F) %>% group_by(P6020) %>% summarise(education = weighted.mean(ESC, fex_c_2011) , 
-                                                                 age = weighted.mean(P6040, fex_c_2011))
-'Hagamos el calculo solo para bogota'
-data %>% subset(is.na(ESC)==F & area == 11) %>% group_by(P6020) %>% summarise(education = weighted.mean(ESC, fex_c_2011) , 
-            
-                                                                              
-
-
+          
 'Veamos la distribucion' 
-summary(parlamento_long$hombres) # La mediana!!! 
+summary(parlamento_long$hombres)
 
 "Mediana de los ultimos 10 yeasr en los paises de america latina"
 parlamento_long %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres)) 
@@ -139,4 +112,7 @@ table(ocupa_wide$country,is.na(ocupa_wide$mujeres)) %>% addmargins(.,2)
 
 'Eliminemos los NA y hagamoslo de nuevo'
 descript = subset(ocupa_wide,is.na(mujeres) == F)
-descript %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres))                                                                  age = weighted.mean(P6040, fex_c_2011))
+descript %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres))   
+
+
+
