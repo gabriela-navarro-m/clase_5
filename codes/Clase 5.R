@@ -1,36 +1,64 @@
-# Elaborado por: Eduard F. Martinez Gonzalez
-# Fecha: 9 de septiembre de 2020
-# Nota: No se usan acentos ni caracteres especiales para evitar conflictos entre los diferentes sistemas operativos.
+# Elaborado por: Eduard Martinez
+# Colaboradores:
+# Fecha de elaboracion: 12/02/2020
+# Ultima modificacion: 16/02/2021
 
-#--------------------------#
-# 0. Configuración inicial #
-#--------------------------#
+# intial configuration
+rm(list = ls()) # limpia el entorno de R
+pacman::p_load(tidyverse,reshape2,readxl) # cargar y/o instalar paquetes a usar
 
-#### 0.0 Hoy veremos...
-rstudioapi::viewer(url = "Intro-clase-5.html")
+# tydyverse
+browseURL(url = "https://www.tidyverse.org", browser = getOption("browser"))
 
-#### 0.1 Limpiar la consola, el entorno y fijar directorio de trabajo
-cat("\f")
-rm(list=ls())
-setwd("~/Dropbox/teaching/Taller de R/GitHub/Clases/Clase 5") # Cambiar este directorio
-getwd()
+#-----------------------------------------------#
+# 1. Unir bases de datos por filas y/o columnas #
+#-----------------------------------------------#
 
-#### 0.2 Instalar las librerias que vamos a usar en la clase de hoy
-for ( paquete in c('tidyverse','reshape2','data.table') ){
-      if (length(grep(paquete,installed.packages()[,1])) == 0 ){ install.packages(paquete) ; print(paste0("La libreria ", "'", paquete ,"'", " ha sido instalada."))}
-      else { print(paste0("La libreria ", "'", paquete ,"'", " ya esta instalada."))}
-      rm(paquete)
-}
+#### 1.4 Cargar bases de datos
+browseURL(url = "http://microdatos.dane.gov.co/index.php/catalog/659/get_microdata", browser = getOption("browser")) # Fuente: DANE
 
-#### 0.3 Llamar las librerias
-library('tidyverse') ; library('reshape2') ; library('data.table')
+cg_cabecera = readRDS(file = "data/input/Cabecera - Caracteristicas generales (Personas).rds")
+ocu_cabecera = readRDS(file = "data/input/Cabecera - Desocupados.csv")
+
+cg_resto = readRDS(file = "data/input/Resto - Caracteristicas generales (Personas).rds")
+ocu_resto = readRDS(file = "data/input/Resto - Desocupados.rds")
+
+#### 1.2 Hacer merge de las bases de datos
+browseURL(url = "http://microdatos.dane.gov.co/index.php/catalog/659/data_dictionary", browser = getOption("browser")) # Chequear el diccionario de variables
+
+#### 1.2.1 Chequear el identificador
+duplicated(cg_cabecera$directorio) %>% table()
+
+duplicated(paste0(cg_cabecera$directorio,cg_cabecera$secuencia_p)) %>% table()
+
+duplicated(paste0(cg_cabecera$directorio,cg_cabecera$secuencia_p,cg_cabecera$orden)) %>% table() # No hay duplicados en X
+
+duplicated(paste0(deso_cabecera$directorio,deso_cabecera$secuencia_p,deso_cabecera$orden)) %>% table() # No hay duplicados en Y
+
+#### 1.2.2 Merge dejando todas las observaciones de caracteristicas generales
+cabecera = full_join(x = cg_cabecera , y = deso_cabecera , by = c('directorio','secuencia_p','orden') , suffixes = c('_cg','_deso'))  
+
+resto = full_join(x = cg_resto , y = deso_resto , by = c('directorio','secuencia_p','orden') , suffixes = c('_cg','_deso'))  
+View(cg_resto) # Vamos s cambiar los nombres de las variables para poder unirlos con cabecera despues
+colnames(cg_resto) = tolower(colnames(cg_resto))
+colnames(deso_resto) = tolower(colnames(deso_resto))
+resto = full_join(x = cg_resto , y = deso_resto , by = c('directorio','secuencia_p','orden') , suffixes = c('_cg','_deso'))  
+
+#### 1.3 Agregando observaciones 
+nacional = plyr::rbind.fill(cabecera,resto)
+
+#### 1.4 Visor de datos DANE
+warning('En el Task de la clase usted podra hacer calculos con la GEIH y comparar susu resultados con los de esta app')
+browseURL(url = "https://sitios.dane.gov.co/visor-geih/#/visor", browser = getOption("browser"))
+
+#### 1.5 exportar y limpiar la base de datos
+saveRDS(object = nacional , file = "data/procesados/GEIH nacional.rds")
+rm(list = ls())
+
 
 #------------------------------#
-# 1. Transponer bases de datos #
+# 2. Transponer bases de datos #
 #------------------------------#
-
-#### 1.0. Veamos la intuicion primero
-rstudioapi::viewer(url = "help/Help-Reshape.html")
 
 #### 1.1. Podemos obtener ayuda adiccional aqui
 browseURL(url = "http://www.cookbook-r.com/Manipulating_data/Converting_data_between_wide_and_long_format/", browser = getOption("browser")) # Paquete reshape2
@@ -39,27 +67,58 @@ browseURL(url = "https://cloud.r-project.org/web/packages/data.table/vignettes/d
 
 #### 1.2. Cargar e inspeccionar las bases de datos
 browseURL(url = "https://estadisticas.cepal.org/cepalstat/tabulador/ConsultaIntegrada.asp?", browser = getOption("browser")) # Fuente de los datos
-ocupa = readRDS(file = 'data/original/tasa ocupados por sexo.rds') # Ojo esto es la tasa de ocupacion
+ocupa = readRDS(file = 'data/input/tasa ocupados por sexo.rds') # Ojo esto es la tasa de ocupacion
 summary(ocupa)
 table(ocupa$country)
 table(ocupa$country,is.na(ocupa$tasa))
 
 #### 1.3 Long a wide
-ocupa_wide = reshape2::dcast(data = ocupa, formula =  country + year ~ clase , value.var="tasa")
+ocupa_wide = dcast(data = ocupa, formula =  country + year ~ clase , value.var="tasa")
 View(ocupa_wide)
 
 #### 1.4 Wide a long
-parlamento = readxl::read_excel(path = 'data/original/mujeres_parlamento.xlsx')
+parlamento = read_excel(path = 'data/input/mujeres_parlamento.xlsx')
 summary(parlamento)
 
-parlamento_long = reshape2::melt(data = parlamento, id.vars = c('country') , value.name="mujeres" )
+parlamento_long = melt(data = parlamento, id.vars = c('country') , value.name="mujeres" )
 View(parlamento_long)
 
 #### 1.4.1 Veamos la diferencia entre hombres y mujeres
 parlamento_long = mutate(parlamento_long, hombres = 100 - mujeres)
 
-'Veamos la distribucion'
-summary(parlamento_long$hombres) # La mediana!!!
+#-----------------#
+# 3.Agrupar datos # 
+#-----------------#
+
+#### 3 Limpiemos entorno una vez mas
+rm(list = ls())
+data = readRDS("data/input/geih nacional.rds")
+
+#### 3.1 Calculos por grupos
+'primero aseguremonos que el factor de expancion sea numerico'
+is.numeric(data$cantidad)
+
+'numero de homicidios por genero'
+data %>% group_by(genero) %>% summarise(total = sum(cantidad))
+
+'numero de homicidios por genero y medio'
+genero_arma = data %>% group_by(genero,`armas medios`) %>% summarise(total = sum(cantidad))
+
+'numero de homicidios y la edad por sexo'
+data %>% group_by(P6020) %>% summarise(education = weighted.mean(ESC, fex_c_2011) ,  age = weighted.mean(P6040, fex_c_2011))
+
+'limpiemos la variable primero'
+is.numeric(data$ESC)
+data %>% subset(is.na(ESC)==F) %>% group_by(P6020) %>% summarise(education = weighted.mean(ESC, fex_c_2011) , 
+                                                                 age = weighted.mean(P6040, fex_c_2011))
+'Hagamos el calculo solo para bogota'
+data %>% subset(is.na(ESC)==F & area == 11) %>% group_by(P6020) %>% summarise(education = weighted.mean(ESC, fex_c_2011) , 
+            
+                                                                              
+
+
+'Veamos la distribucion' 
+summary(parlamento_long$hombres) # La mediana!!! 
 
 "Mediana de los ultimos 10 yeasr en los paises de america latina"
 parlamento_long %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres)) 
@@ -80,54 +139,4 @@ table(ocupa_wide$country,is.na(ocupa_wide$mujeres)) %>% addmargins(.,2)
 
 'Eliminemos los NA y hagamoslo de nuevo'
 descript = subset(ocupa_wide,is.na(mujeres) == F)
-descript %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres))
-
-#----------------#
-# 2. Fechas en R #
-#----------------#
-
-#### Limpiar el entorno
-rm(list = ls())
-
-#### 2.0. Funciones para inspeccionar
-is.Date <- function(x) inherits(x, "Date")
-is.POSIXct <- function(x) inherits(x, "POSIXct")
-
-#### 2.1. Cargar la base de datos
-browseURL(url = "https://www.policia.gov.co/grupo-información-criminalidad/estadistica-delictiva", browser = getOption("browser")) # Fuente de los datos
-siedco = readRDS(file = "data/original/SIEDCO.rds")
-str(siedco)
-
-#### 2.2 Inspeccionemos los datos
-is.character(siedco$fecha)
-is.POSIXct(siedco$fecha_1)
-is.Date(siedco$fecha_2)
-
-#### 2.3 Convertir de character a fecha
-siedco  = siedco %>% mutate(fecha_3 = as.POSIXct(fecha, format = "%Y-%m-%d"), # De Character a POSIXct
-                            fecha_4 = as.Date(fecha, "%Y-%m-%d")) # De Character a Date
-str(siedco)
-
-#### 2.4 Convertir de fecha a character
-siedco  = siedco %>% mutate(fecha_5 = as.character(fecha_1, format = "%d-%m-%Y"), # De POSIXct a Character
-                            fecha_6 = as.character(fecha_2, format = "%Y-%m-%d")) # De Date a Character
-is.character(siedco$fecha_5)
-is.character(siedco$fecha_6)
-
-### 2.5 Extraer el year y el mes de una variable de fecha
-siedco  = siedco %>% mutate(year_month = format(as.Date(fecha_1), "%Y-%m"), # Extraer el mes y el year
-                            year = format(as.Date(fecha_1), "%Y"),
-                            month = format(as.Date(fecha_1), "%m")) # Extraer el year
-
-#### 2.6 Operaciones entre fechas
-as.Date(x = "2020-09-09","%Y-%m-%d") %>% as.numeric()
-as.Date(x = "2020-09-10","%Y-%m-%d") %>% as.numeric()
-siedco  = siedco %>% mutate(diferencia = 18514 - as.numeric(fecha_2))
-
-
-
-
-
-
-
-
+descript %>% group_by(country) %>% summarize(m_hombres = median(hombres) , m_mujeres = median(mujeres))                                                                  age = weighted.mean(P6040, fex_c_2011))
